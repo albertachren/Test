@@ -32,13 +32,33 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Component;
+import javax.swing.Box;
 
 @SuppressWarnings("unused")
 public class TestETsts {
 
 	public JFrame frame;
 
-	static public JButton btnHit;
+	static JButton btnHit = new JButton("Hit");
+	static JButton btnStand = new JButton("Stand");
+	static JTextPane textPane = new JTextPane();
+	public static JTextPane textPane_1 = new JTextPane();
+
+	
+	/**
+	 * @wbp.nonvisual location=195,129
+	 */
+	private final Component horizontalGlue = Box.createHorizontalGlue();
+	
+	static void threadTestG(){
+		synchronized(TestG.class){
+		    TestG.class.notify();
+		}
+	}
+	
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -47,8 +67,8 @@ public class TestETsts {
 			public void run() {
 				try {
 					TestETsts window = new TestETsts();
-					btnHit.setEnabled(true);
 					window.frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -91,28 +111,39 @@ public class TestETsts {
 		menuBar.add(mnNewMenu);
 		
 		JMenuItem mntmRestart = new JMenuItem("Restart");
+		mntmRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TestG.reset = "Y";
+			}
+		});
 		mnNewMenu.add(mntmRestart);
 		
-		btnHit.setEnabled(false);
+		
+		btnHit.setEnabled(true);
 		btnHit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			  TestG.input = "lol";
+				TestG.input = "Hit";
+				threadTestG();
 			}
 		});
 		
-		JButton btnStand = new JButton("Stand");
-		btnStand.setEnabled(false);
+		btnStand.setEnabled(true);
+		btnStand.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TestG.input = "Stand";
+				threadTestG();
+			}
+		});
 		
 		
-		JTextPane textPane = new JTextPane();
+		
+		
 		textPane.setEditable(false);
 		textPane.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		textPane.setText("2");
 		
-		JTextPane textPane_1 = new JTextPane();
+		
 		textPane_1.setEditable(false);
 		textPane_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		textPane_1.setText("2");
 		
 		JLabel lblYou = new JLabel("You");
 		
@@ -121,30 +152,37 @@ public class TestETsts {
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(77)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnHit)
-						.addComponent(lblYou)
-						.addComponent(textPane, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(77)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnHit)
+								.addComponent(lblYou)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(49)
+							.addComponent(textPane, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblDealer)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-							.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnStand)))
-					.addGap(72))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(1)
+							.addComponent(btnStand))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(10)
+							.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)))
+					.addGap(59))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(43, Short.MAX_VALUE)
+					.addContainerGap(32, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblYou)
 						.addComponent(lblDealer))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(textPane_1)
-						.addComponent(textPane))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(textPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(104)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnStand)
