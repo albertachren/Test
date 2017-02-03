@@ -25,6 +25,8 @@ import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JToolBar;
 import javax.swing.JSplitPane;
 import javax.swing.JPanel;
@@ -63,6 +65,7 @@ public class TestETsts {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
