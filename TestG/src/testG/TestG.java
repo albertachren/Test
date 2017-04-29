@@ -1,100 +1,117 @@
 package testG;
-import java.awt.EventQueue;
+
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-
 import testG.TestETsts;
 
-
 //TEST
-
 
 //Card system
 class Cards {
 	static Scanner scan = new Scanner(System.in);
-	
-	static Integer[] deck = {2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11};
 
-	public static Integer aceInt;
-	
+	static Integer[] deck = { 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9,
+			9, 9, 10, 10, 10, 10, 11, 11, 11, 11 };
+
+	static volatile Integer aceInt = 1;
+
 	List<Integer> cards = new LinkedList<Integer>(Arrays.asList(deck));
-	//Constructor
-	public Cards(){
+	
+	
+	static synchronized void threadWait() {
+		try {
+			Cards.class.wait();
+		} catch (InterruptedException e) {
+		}
+	}
+
+	// Constructor
+	public Cards() {
 		Collections.shuffle(cards);
 	}
-	//Diagnostic
-	void print(){
+
+	// Diagnostic
+	void print() {
 		System.out.println(cards);
 	}
-	
-	void deal(List<Integer> hand, int amount, boolean auto){
+
+	void deal(List<Integer> hand, int amount, boolean auto) {
 		int count = 1;
-		do{
-		int temp = cards.remove(0);
-		if(temp == 11){
-			
-			if(auto == true && (hand.stream().mapToInt(Integer::intValue).sum() + 11) > 21){
-				temp = 1;
-			}else if(auto == true){
-				break;
+		do {
+			int temp = cards.remove(0);
+			if (temp == 11) {
+
+				if (auto == true && (hand.stream().mapToInt(Integer::intValue).sum() + 11) > 21) {
+					temp = 1;
+				} else if (auto == true) {
+					break;
+				} else if (auto == false) {
+					System.out.println("You got an Ace, 1 or 11?");
+					TestETsts.txtpnAce.setText("Ace!");
+				}
+				boolean tempW = true;
+				while (tempW == true) {
+					threadWait();
+					switch (aceInt) {
+					case 1:
+						temp = 1;
+						tempW = false;
+					case 11:
+						tempW = false;
+					default:
+						break;
+					}
+					TestETsts.txtpnAce.setText("");
+				}
 			}
-			else if(auto == false){System.out.println("You got an Ace, 1 or 11?");}
-			boolean tempW = true;
-			TestETsts.txtpnAce.setText("Ace!");
-			aceInt = 0;
-			while(tempW){
-				//MIGHT NEED WORK
-				switch(aceInt){
-				case 1: temp = 1; tempW = false;
-				case 11: break;
-				default: break;
-			}
-			}
-		}	
-		hand.add(temp);
-		TestG.notifTestG();
-		count++;
-		}while(count <= amount);
+			hand.add(temp);
+			TestG.notifTestG();
+			count++;
+		} while (count <= amount);
 	}
 }
 
-//Hand object
-class Hand{
+// Hand object
+class Hand {
+
 	
-	List<Integer> hand = new ArrayList<Integer> ();
 	
-	public Hand(){
-		
+	
+	List<Integer> hand = new ArrayList<Integer>();
+
+	public Hand() {
+
 	}
-	
-	public String getHand(){
+
+	public String getHand() {
 		String cont = "";
-		for(int i = 0; i < hand.size() ; i++){
+		for (int i = 0; i < hand.size(); i++) {
 			int temp = 0;
 			String templ = "|";
-			
-			if(i == hand.size() -1 ){
+
+			if (i == hand.size() - 1) {
 				templ = "";
 			}
-			
+
 			temp = (int) hand.get(i);
 			cont += temp + templ;
-			}
+		}
 		return cont;
 	}
-	
-	public Boolean compare(Hand target){
+
+	public Boolean compare(Hand target) {
 		Boolean win = false;
-		
+
 		Integer handDiff = 21 - hand.stream().mapToInt(Integer::intValue).sum();
 		Integer targetDiff = 21 - target.hand.stream().mapToInt(Integer::intValue).sum();
-		
-		if(targetDiff < 0){
+
+		if (targetDiff < 0) {
 			win = true;
-		}else if(handDiff < 0){
+		} else if (handDiff < 0) {
 			win = false;
-		}else if(handDiff < targetDiff){
+		} else if (handDiff < targetDiff) {
 			win = true;
 		}
 		return win;
@@ -103,118 +120,112 @@ class Hand{
 
 public class TestG {
 	
-	static String input = "";
-	
-	static Boolean win = false;
-	
 	static Scanner scan = new Scanner(System.in);
+	static String input = "";
+	static String reset = "";
 	static Cards pack;
 	static Hand player;
 	static Hand dealer;
-	static boolean restart;
-	static boolean playing = true;
-	static String reset = ""; 
+	static Boolean restart;
+	static Boolean playing = true;
+	static Boolean win = null;
 	
-	static synchronized void threadTest(){
+
+	static synchronized void threadTest() {
 		TestETsts.btnHit.setEnabled(true);
 		TestETsts.btnStand.setEnabled(true);
-		try 
-        {
-            TestG.class.wait();
-        } 
-        catch (InterruptedException e) 
-        {
-        }
+		try {
+			TestG.class.wait();
+		} catch (InterruptedException e) {
+		}
 	}
-	static synchronized void notifTestG(){
+
+	static synchronized void notifTestG() {
 		TestG.class.notify();
 
 	}
-	
-	
+
 	public static void main(String[] args) {
-		//GUI
+		// GUI
 		TestETsts.main(args);
-		
-		
-		
-		
-		
-		do{
-		restart = false;
-		player = new Hand();
-		dealer = new Hand();
-		
-		//Generating card pack
-		pack = new Cards();
-		
-		//Dealing cards
-		pack.deal(player.hand,2, false); 
-		pack.deal(dealer.hand,1, true);
-		
-		
-		
-		do{
-			
-			TestETsts.textPane.setText(player.getHand());
-			TestETsts.textPane_1.setText(dealer.getHand());
-			
-			System.out.println("Your hand:"+" "+ player.getHand());//getHand
-			System.out.println("Dealers hand:"+" "+ dealer.getHand());
-				
-			System.out.println("Hit/Stand?");
-		
-			
-			threadTest();
-			
-		
-			
-			if(input.equals("Hit")){
-					pack.deal(player.hand,1, false);
-					if(player.hand.stream().mapToInt(Integer::intValue).sum() > 21){
+
+		do {
+			restart = false;
+			player = new Hand();
+			dealer = new Hand();
+
+			// Generating card pack
+			pack = new Cards();
+
+			// Dealing cards
+			pack.deal(player.hand, 2, false);
+			pack.deal(dealer.hand, 1, true);
+
+			do {
+
+				TestETsts.textPane.setText(player.getHand());
+				TestETsts.textPane_1.setText(dealer.getHand());
+
+				System.out.println("Your hand:" + " " + player.getHand() + " " + "=" + " " + player.hand.stream().mapToInt(Integer::intValue).sum());
+				System.out.println("Dealers hand:" + " " + dealer.getHand());
+
+				System.out.println("Hit/Stand?");
+
+				threadTest();
+
+				if (input.equals("Hit")) {
+					pack.deal(player.hand, 1, false);
+					if (player.hand.stream().mapToInt(Integer::intValue).sum() > 21) {
 						win = false;
 						playing = false;
 						continue;
 					}
-					
-				} else if(input.equals("Stand")){
+
+				} else if (input.equals("Stand")) {
 					TestETsts.btnHit.setEnabled(false);
 					TestETsts.btnStand.setEnabled(false);
-					
-					playing = false;
+
+					/*playing = false;
 					pack.deal(dealer.hand, 1, false);
-					System.out.println("Dealers hand:"+" "+ dealer.getHand()+ " " + "=" + " " + dealer.hand.stream().mapToInt(Integer::intValue).sum());
-					
+					System.out.println("Dealers hand:" + " " + dealer.getHand() + " " + "=" + " "
+							+ dealer.hand.stream().mapToInt(Integer::intValue).sum());
+
 					TestETsts.textPane_1.setText(dealer.getHand());
-					
-					while(dealer.hand.stream().mapToInt(Integer::intValue).sum() < 17){
+					 */
+					while (dealer.hand.stream().mapToInt(Integer::intValue).sum() < 17) {
+						playing = false;
 						pack.deal(dealer.hand, 1, false);
-						System.out.println("Dealers hand:"+" "+ dealer.getHand()+ " " + "=" + " " + dealer.hand.stream().mapToInt(Integer::intValue).sum());
-						
+						System.out.println("Dealers hand:" + " " + dealer.getHand() + " " + "=" + " "
+								+ dealer.hand.stream().mapToInt(Integer::intValue).sum());
+
 						TestETsts.textPane_1.setText(dealer.getHand());
-						
 						try {
 							TimeUnit.SECONDS.sleep(1);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}	
+						}
 					}
 					win = player.compare(dealer);
-				}else{
-				System.out.println("invalid answer");
-					
+				} else {
+					System.out.println("invalid answer");
+
 				}
-			}while(playing);	
-			
-			if (win == true){
+			} while (playing == true);
+
+			if (win == true) {
 				System.out.println("You win!");
 				TestETsts.textPane.setText("Win!");
-			}else{
-			System.out.println("You lose!");
-			TestETsts.textPane_1.setText("Win!");
+				TestETsts.textPane_1.setText(dealer.getHand());
+
+			} else {
+				System.out.println("You lose!");
+				TestETsts.textPane_1.setText("Win!");
+				TestETsts.textPane.setText(player.getHand());
+
 			}
-			System.out.println("Your hand:"+" "+ player.getHand());
+			System.out.println("Your hand:" + " " + player.getHand() + " " + "=" + " " + player.hand.stream().mapToInt(Integer::intValue).sum());
+			System.out.println("Dealers hand:" + " " + dealer.getHand() + " " + "=" + " " + dealer.hand.stream().mapToInt(Integer::intValue).sum());
 			try {
 				TimeUnit.SECONDS.sleep(1);
 			} catch (InterruptedException e) {
@@ -223,19 +234,18 @@ public class TestG {
 			}
 			System.out.println("Try again? Y/N");
 			TestETsts.btnRestart.setVisible(true);
-			
+
 			threadTest();
-			
-			if(reset.equals("Y")){
+
+			if (reset.equals("Y")) {
 				restart = true;
 				TestETsts.btnRestart.setVisible(false);
+				win = false;
+				playing = true;
+				TestETsts.textPane.setText("");
+				TestETsts.textPane_1.setText("");
 			}
-		}while(restart);
+		} while (restart);
 	}
 
-	
-	
-
 }
-
-

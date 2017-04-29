@@ -113,11 +113,13 @@ public class TestETsts {
 		button1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cards.aceInt = 1;
+				threadCards();
 			}
 		});
 		button11.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Cards.aceInt = 11;
+				threadCards();
 			}
 		});
 		frame = new JFrame();
@@ -143,6 +145,7 @@ public class TestETsts {
 		btnHit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				TestG.input = "Hit";
+				System.out.println("HIT");
 				threadTestG();
 			}
 		});
@@ -151,6 +154,7 @@ public class TestETsts {
 		btnStand.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				TestG.input = "Stand";
+				System.out.println("STAND");
 				threadTestG();
 			}
 		});
