@@ -45,13 +45,15 @@ public class TestETsts {
 	static JButton btnHit = new JButton("Hit");
 	static JButton btnStand = new JButton("Stand");
 	static JTextPane textPane = new JTextPane();
-	public static JTextPane textPane_1 = new JTextPane();
-
-	
+	static JTextPane textPane_1 = new JTextPane();
+	static JButton btnRestart = new JButton("Restart");
+	static JTextPane txtpnAce = new JTextPane();
 	/**
 	 * @wbp.nonvisual location=195,129
 	 */
 	private final Component horizontalGlue = Box.createHorizontalGlue();
+	private final JButton button1 = new JButton("1");
+	private final JButton button11 = new JButton("11");
 	
 	static void threadTestG(){
 		synchronized(TestG.class){
@@ -59,6 +61,11 @@ public class TestETsts {
 		}
 	}
 	
+	static void threadCards(){
+		synchronized(Cards.class){
+		    Cards.class.notify();
+		}
+	}
 	
 	
 	/**
@@ -103,6 +110,16 @@ public class TestETsts {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		button1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Cards.aceInt = 1;
+			}
+		});
+		button11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Cards.aceInt = 11;
+			}
+		});
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -151,6 +168,19 @@ public class TestETsts {
 		JLabel lblYou = new JLabel("You");
 		
 		JLabel lblDealer = new JLabel("Dealer");
+		
+		btnRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TestG.reset = "Y";
+				threadTestG();
+			}
+		});
+		
+		
+		btnRestart.setVisible(false);
+		
+		
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -164,33 +194,58 @@ public class TestETsts {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(49)
 							.addComponent(textPane, GroupLayout.PREFERRED_SIZE, 123, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+					.addPreferredGap(ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 						.addComponent(lblDealer)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(1)
 							.addComponent(btnStand))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(10)
-							.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addGap(32)
+							.addComponent(txtpnAce, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(button11)
+								.addComponent(button1))))
 					.addGap(59))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(157)
+					.addComponent(btnRestart)
+					.addContainerGap(208, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap(32, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblYou)
-						.addComponent(lblDealer))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(textPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(104)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnStand)
-						.addComponent(btnHit))
-					.addGap(25))
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblYou)
+								.addComponent(lblDealer))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(textPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textPane_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(18)
+							.addComponent(button1)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(11)
+									.addComponent(btnRestart)
+									.addGap(29)
+									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnStand)
+										.addComponent(btnHit)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(button11)))
+							.addGap(25))
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addComponent(txtpnAce, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(101))))
 		);
 		frame.getContentPane().setLayout(groupLayout);
 	}

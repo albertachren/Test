@@ -16,6 +16,8 @@ class Cards {
 	
 	static Integer[] deck = {2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11};
 
+	public static Integer aceInt;
+	
 	List<Integer> cards = new LinkedList<Integer>(Arrays.asList(deck));
 	//Constructor
 	public Cards(){
@@ -31,7 +33,6 @@ class Cards {
 		do{
 		int temp = cards.remove(0);
 		if(temp == 11){
-			//comparator stuff comes here later
 			
 			if(auto == true && (hand.stream().mapToInt(Integer::intValue).sum() + 11) > 21){
 				temp = 1;
@@ -40,8 +41,11 @@ class Cards {
 			}
 			else if(auto == false){System.out.println("You got an Ace, 1 or 11?");}
 			boolean tempW = true;
+			TestETsts.txtpnAce.setText("Ace!");
+			aceInt = 0;
 			while(tempW){
-				switch(scan.nextInt()){
+				//MIGHT NEED WORK
+				switch(aceInt){
 				case 1: temp = 1; tempW = false;
 				case 11: break;
 				default: break;
@@ -218,11 +222,13 @@ public class TestG {
 				e.printStackTrace();
 			}
 			System.out.println("Try again? Y/N");
+			TestETsts.btnRestart.setVisible(true);
 			
 			threadTest();
 			
 			if(reset.equals("Y")){
 				restart = true;
+				TestETsts.btnRestart.setVisible(false);
 			}
 		}while(restart);
 	}
