@@ -16,7 +16,7 @@ class Cards {
 			9, 9, 10, 10, 10, 10, 11, 11, 11, 11 };
 
 	static volatile Integer aceInt = 1;
-
+	static public volatile Ace ace = new Ace();
 	List<Integer> cards = new LinkedList<Integer>(Arrays.asList(deck));
 	
 	
@@ -49,7 +49,7 @@ class Cards {
 					break;
 				} else if (auto == false) {
 					System.out.println("You got an Ace, 1 or 11?");
-					TestETsts.txtpnAce.setText("Ace!");
+					ace.setVisible(true);
 				}
 				boolean tempW = true;
 				while (tempW == true) {
@@ -63,7 +63,6 @@ class Cards {
 					default:
 						break;
 					}
-					TestETsts.txtpnAce.setText("");
 				}
 			}
 			hand.add(temp);
@@ -132,8 +131,7 @@ public class TestG {
 	
 
 	static synchronized void threadTest() {
-		TestETsts.btnHit.setEnabled(true);
-		TestETsts.btnStand.setEnabled(true);
+	
 		try {
 			TestG.class.wait();
 		} catch (InterruptedException e) {
@@ -170,12 +168,17 @@ public class TestG {
 				System.out.println("Dealers hand:" + " " + dealer.getHand());
 
 				System.out.println("Hit/Stand?");
-
+				
+				TestETsts.btnHit.setEnabled(true);
+				TestETsts.btnStand.setEnabled(true);
+				
 				threadTest();
 
 				if (input.equals("Hit")) {
 					pack.deal(player.hand, 1, false);
 					if (player.hand.stream().mapToInt(Integer::intValue).sum() > 21) {
+						TestETsts.btnHit.setEnabled(false);
+						TestETsts.btnStand.setEnabled(false);
 						win = false;
 						playing = false;
 						continue;
@@ -194,7 +197,7 @@ public class TestG {
 					 */
 					while (dealer.hand.stream().mapToInt(Integer::intValue).sum() < 17) {
 						playing = false;
-						pack.deal(dealer.hand, 1, false);
+						pack.deal(dealer.hand, 1, true);
 						System.out.println("Dealers hand:" + " " + dealer.getHand() + " " + "=" + " "
 								+ dealer.hand.stream().mapToInt(Integer::intValue).sum());
 
@@ -233,17 +236,16 @@ public class TestG {
 				e.printStackTrace();
 			}
 			System.out.println("Try again? Y/N");
-			TestETsts.btnRestart.setVisible(true);
-
+			TestETsts.mntmRestart.setEnabled(true);
 			threadTest();
 
 			if (reset.equals("Y")) {
 				restart = true;
-				TestETsts.btnRestart.setVisible(false);
 				win = false;
 				playing = true;
 				TestETsts.textPane.setText("");
 				TestETsts.textPane_1.setText("");
+				TestETsts.mntmRestart.setEnabled(false);
 			}
 		} while (restart);
 	}
